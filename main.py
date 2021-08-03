@@ -14,7 +14,7 @@ from experiment import experiment, re_ranking
 def main():
     demo = experiment(10,10,10,'uniform','DI')
     P = demo.setup()
-    print(P.repr)
+    print(P)
     p=10
 
     ndcg_plot={}
