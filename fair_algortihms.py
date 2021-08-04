@@ -4,6 +4,7 @@ import numpy as np
 from .utils import swap
 
 def DetGreedy(data,p,k_max):
+    print(data)
     rankedAttList = [] 
     rankedScoreList = []
     counts={}
