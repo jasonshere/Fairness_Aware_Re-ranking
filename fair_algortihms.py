@@ -4,9 +4,9 @@ import numpy as np
 from .utils import swap
 
 def DetGreedy(data,p,k_max):
-    print(data)
     rankedAttList = [] 
     rankedScoreList = []
+    rankedIndexList = []
     counts={}
     for i in range(len(p)):
         counts[i]=0
@@ -23,9 +23,10 @@ def DetGreedy(data,p,k_max):
                 s[i]=data[(i,counts[i])]
             nextAtt = max(s,key=s.get)
         rankedAttList.append(nextAtt)
-        rankedScoreList.append(data[(nextAtt,counts[nextAtt])])
+        rankedScoreList.append(data[(nextAtt,counts[nextAtt])][0])
+        rankedIndexList.append(data[(nextAtt,counts[nextAtt])][1])
         counts[nextAtt]+=1
-    return pd.DataFrame(list(zip(rankedAttList, rankedScoreList)),columns =['ai', 'score'])
+    return pd.DataFrame(list(zip(rankedAttList, rankedScoreList, rankedIndexList)),columns =['ai', 'score', 'index'])
 
 
 def DetCons(data,p,kmax):
