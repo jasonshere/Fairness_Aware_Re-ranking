@@ -16,11 +16,11 @@ def DetGreedy(data,p,k_max):
         s={}
         if len(belowMin) != 0:
             for i in belowMin:
-                s[i]=data[(i,counts[i])]
+                s[i]=data[(i,counts[i])][0]
             nextAtt = max(s,key=s.get)
         else:
             for i in belowMax:
-                s[i]=data[(i,counts[i])]
+                s[i]=data[(i,counts[i])][0]
             nextAtt = max(s,key=s.get)
         rankedAttList.append(nextAtt)
         rankedScoreList.append(data[(nextAtt,counts[nextAtt])][0])
@@ -33,6 +33,7 @@ def DetCons(data,p,kmax):
 
     rankedAttrList=[]
     rankedScoreList=[]
+    rankedIndexList = []
     counts={}
     for i in range(len(p)):
         counts[i]=0
@@ -43,7 +44,7 @@ def DetCons(data,p,kmax):
         s={}
         if len(belowMin)!=0:
             for i in belowMin:
-                s[i]=data[(i,counts[i])]
+                s[i]=data[(i,counts[i])][0]
             nextAtt= max(s,key=s.get)
                 
         else: 
@@ -54,15 +55,17 @@ def DetCons(data,p,kmax):
             nextAtt= min(s,key=s.get)
                 
         rankedAttrList.append(nextAtt)
-        rankedScoreList.append(data[(nextAtt,counts[nextAtt])])
+        rankedScoreList.append(data[(nextAtt,counts[nextAtt])][0])
+        rankedIndexList.append(data[(nextAtt,counts[nextAtt])][1])
         counts[nextAtt]+=1
         
-    return pd.DataFrame(list(zip(rankedAttrList, rankedScoreList)),columns =['ai', 'score'])
+    return pd.DataFrame(list(zip(rankedAttrList, rankedScoreList, rankedIndexList)),columns =['ai', 'score', 'index'])
 
 def DetRelax(data,p,kmax):
 
     rankedAttrList=[]
     rankedScoreList=[]
+    rankedIndexList=[]
     counts={}
     for i in range(len(p)):
         counts[i]=0
@@ -73,7 +76,7 @@ def DetRelax(data,p,kmax):
         s={}
         if len(belowMin)!=0:
             for i in belowMin:
-                s[i]=data[(i,counts[i])]
+                s[i]=data[(i,counts[i])][0]
             nextAtt= max(s,key=s.get)
                 
         else: 
@@ -88,15 +91,17 @@ def DetRelax(data,p,kmax):
             nextAtt= max(s,key=s.get)
                 
         rankedAttrList.append(nextAtt)
-        rankedScoreList.append(data[(nextAtt,counts[nextAtt])])
+        rankedScoreList.append(data[(nextAtt,counts[nextAtt])][0])
+        rankedIndexList.append(data[(nextAtt,counts[nextAtt])][1])
         counts[nextAtt]+=1
         
-    return pd.DataFrame(list(zip(rankedAttrList, rankedScoreList)),columns =['ai', 'score'])
+    return pd.DataFrame(list(zip(rankedAttrList, rankedScoreList, rankedIndexList)),columns =['ai', 'score', 'index'])
 
 def DetConstSort(data,p,kmax):
 
     rankedAttrDict={}
     rankedScoreDict={}
+    rankedIndexDict={}
     maxIndicesDict={}
     
     counts={}
@@ -120,17 +125,19 @@ def DetConstSort(data,p,kmax):
         if len(changedMins) != 0:
             vals={}
             for ai in changedMins:
-                vals[ai]=data[(ai,counts[ai])]
+                vals[ai]=data[(ai,counts[ai])][0]
             ordChangedMins=np.asarray((sorted(vals.items(), key = lambda kv:(kv[1], kv[0]),reverse=True)))[:,0].tolist()
             for ai in ordChangedMins:
                 rankedAttrDict[lastEmpty]=ai
-                rankedScoreDict[lastEmpty]=data[(ai,counts[ai])]
+                rankedScoreDict[lastEmpty]=data[(ai,counts[ai])][0]
+                rankedIndexDict[lastEmpty]=data[(ai,counts[ai])][1]
                 maxIndicesDict[lastEmpty]=k
                 start=lastEmpty
                 
                 while start>0 and maxIndicesDict[start-1]>=maxIndicesDict[start] and rankedScoreDict[start-1]<rankedScoreDict[start]:
                     swap(maxIndicesDict,start-1,start)
                     swap(rankedAttrDict,start-1,start)
+                    swap(rankedIndexDict,start-1,start)
                     swap(rankedScoreDict,start-1,start)
                     start-=1
                 counts[ai]+=1
@@ -139,4 +146,5 @@ def DetConstSort(data,p,kmax):
 
     rankedAttrList=[ v for v in rankedAttrDict.values() ]
     rankedScoreList=[ v for v in rankedScoreDict.values() ]
-    return pd.DataFrame(list(zip(rankedAttrList, rankedScoreList)),columns =['ai', 'score'])
+    rankedIndexList=[ v for v in rankedIndexDict.values() ]
+    return pd.DataFrame(list(zip(rankedAttrList, rankedScoreList, rankedIndexList)),columns =['ai', 'score', 'index'])
