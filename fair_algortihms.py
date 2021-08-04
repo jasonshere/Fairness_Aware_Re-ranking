@@ -1,7 +1,7 @@
 import math
 import pandas as pd
 import numpy as np
-from utils import swap
+from ./utils import swap
 
 def DetGreedy(data,p,k_max):
     rankedAttList = [] 
